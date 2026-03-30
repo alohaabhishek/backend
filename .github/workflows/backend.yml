@@ -57,6 +57,12 @@ jobs:
           task-definition: task-definition.json
           container-name: backend-app-container
           image: ${{ secrets.ECR_BACKEND }}:${{ github.sha }}
+          environment-variables: |
+            PORT=${{ secrets.PORT }}
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_NAME=${{ secrets.DB_NAME }}
 
       # 8. Deploy updated task definition to ECS
       - name: Deploy to ECS
