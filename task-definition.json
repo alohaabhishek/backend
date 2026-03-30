@@ -1,5 +1,5 @@
 {
-  "family": "backend-task",
+  "family": "backend-app-task",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "256",
@@ -7,7 +7,7 @@
   "executionRoleArn": "arn:aws:iam::591446362002:role/ecsTaskExecutionRole",
   "containerDefinitions": [
     {
-      "name": "backend-app-task",
+      "name": "backend-app-container",
       "image": "nginx",
       "essential": true,
       "portMappings": [

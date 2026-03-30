@@ -55,7 +55,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: backend-app-task
+          container-name: backend-app-container
           image: ${{ secrets.ECR_BACKEND }}:${{ github.sha }}
 
       # 8. Deploy updated task definition to ECS
