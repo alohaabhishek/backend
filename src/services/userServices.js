@@ -12,4 +12,15 @@ const getUsers = async() => {
     return users;
 };
 
-module.exports = {createUser, getUsers}
+const updateUser = async (id, data) => {
+  await User.update(data, { where: { id } });
+  return { message: "User updated successfully" };
+};
+
+
+const deleteUser = async (id) => {
+  await User.destroy({ where: { id } });
+  return { message: "User deleted successfully" };
+};
+
+module.exports = {createUser, getUsers, updateUser, deleteUser}

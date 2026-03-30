@@ -1,0 +1,58 @@
+name: Deploy Backend to ECS
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # 2. Configure AWS credentials
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # 3. Login to ECR
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # 4. Build Docker Image
+      - name: Build Image
+        run: |
+          docker build -t backend:${{ github.sha }} .
+
+      # 5. Tag Docker Image
+      - name: Tag Image
+        run: |
+          docker tag backend:${{ github.sha }} ${{ secrets.ECR_BACKEND }}:${{ github.sha }}
+
+      # 6. Push Image to ECR
+      - name: Push Image
+        run: |
+          docker push ${{ secrets.ECR_BACKEND }}:${{ github.sha }}
+
+      # 7. Update Task Definition with new image
+      - name: Render new Task Definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: backend-app-task
+          image: ${{ secrets.ECR_BACKEND }}:${{ github.sha }}
+
+      # 8. Deploy updated task definition to ECS
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ secrets.BACKEND_SERVICE }}
+          cluster: ${{ secrets.CLUSTER_NAME }}

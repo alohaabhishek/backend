@@ -1,5 +1,5 @@
 const db = require("../config/db");
-const { getUsers: getUserService, createUser: createUserService } = require("../services/userServices");
+const { getUsers: getUserService, createUser: createUserService, updateUser: updateUserService, deleteUser: deleteUserService } = require("../services/userServices");
 
 const createUser = async(req, res) => {
   const { name, email } = req.body;
@@ -24,4 +24,24 @@ const getUsers = async(req, res) => {
   }
 };
 
-module.exports = {createUser, getUsers};
+const updateUser = async (req, res) => {
+  try {
+    const result = await updateUserService(req.params.id, req.body);
+    res.send(result);
+  } catch (err) {
+    res.status(400).send({ message: err.message });
+  }
+};
+
+// DELETE
+const deleteUser = async (req, res) => {
+  try {
+    const result = await deleteUserService(req.params.id);
+    res.send(result);
+  } catch (err) {
+    res.status(400).send({ message: err.message });
+  }
+};
+
+
+module.exports = {createUser, getUsers, updateUser, deleteUser};
